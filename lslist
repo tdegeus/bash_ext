@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# ==============================================================================
+
+function printhelp {
+echo "\
+
+NAME
+
+  lslist - print the output of 'ls' on individual lines
+
+USAGE
+
+  $ lslist [STR]
+
+DESCRIPTION
+
+  Print the output of 'ls' on individual lines.
+
+OPTIONS
+
+  -h, --help
+    Print help.
+"
+}
+
+# ==============================================================================
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+  printhelp; exit 0
+fi
+
+# ==============================================================================
+
+out=(`ls $1`)
+nout=${#out[@]}
+
+for (( iout=0 ; iout<nout ; iout++ )); do
+
+  echo ${out[iout]}
+
+done
+
+# ==============================================================================

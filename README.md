@@ -7,6 +7,9 @@ Wrappers around BASH functions.
 <!-- MarkdownTOC -->
 
 - [`lsnum`](#lsnum)
+- [`lslist`](#lslist)
+- [`extract`](#extract)
+- [`efind`](#efind)
 
 <!-- /MarkdownTOC -->
 
@@ -28,3 +31,14 @@ For example `-rwxr--r--` the following numerical value `744`, which breaks down 
 * Group: `Read = 040`.
 * Others: `Read = 004`.
 
+## `lslist`
+
+Print the output of the `ls` command as list.
+
+## `extract`
+
+Automatically extract a (compressed) archive.
+
+## `efind`
+
+Find files with specific extensions.

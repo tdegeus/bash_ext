@@ -1,0 +1,112 @@
+#!/usr/bin/env python
+
+import argparse,os,sys
+
+# ==============================================================================
+
+def printversion():
+  print r'''
+Version 1.1, February 2016
+  '''
+  sys.exit(0)
+
+# ==============================================================================
+
+def printhelp():
+  print r'''
+USAGE
+
+  efind PATH [-e EXTENSION [EXTENSION ...]] [-p PRINT]
+
+DESCRIPTION
+
+  Find files with specific extensions.
+
+OPTIONS
+
+  -h, --help
+    Print help.
+
+  -v, --version
+    Print change-log.
+
+  -e, --extension STR [STR ...]
+    Specify one or more extensions.
+
+  -p, --print STR
+    Define how to join the search results, default: "\n".
+
+EXAMPLE
+
+  find . -e py pyc
+
+RELEASE
+
+  Version 1.1, February 2016
+
+COPYRIGHT
+
+  T.W.J. de Geus
+  tom@geus.me
+  www.geus.me
+  '''
+  sys.exit(0)
+
+# ==============================================================================
+
+# set options/arguments
+opts = [\
+  (('-h','--help'     ),dict(action='store_true'            )),
+  (('-v','--version'  ),dict(action='store_true'            )),
+  (('-e','--extension'),dict(nargs='+',type=str             )),
+  (('-p','--print'    ),dict(nargs=1  ,type=str,default='\n')),
+  ((     '--mindepth' ),dict(nargs=1  ,type=int,default=None)),
+  ((     '--maxdepth' ),dict(nargs=1  ,type=int,default=None)),
+  (('path'            ),dict(nargs='?',type=str,default='.' )),
+]
+
+# parse command-line arguments
+# - catch help
+if sys.argv[1] in ['-h','--help'   ]: printhelp()
+if sys.argv[1] in [     '--version']: printversion()
+# - create parser
+parser = argparse.ArgumentParser(add_help=False)
+for (arg,opt) in opts:
+  if type(arg)==tuple: parser.add_argument(*arg,**opt)
+  else               : parser.add_argument( arg,**opt)
+# - execute parser / convert to "<dict>"
+args = vars(parser.parse_args())
+# - print help and exit
+if args['help'   ]: printhelp()
+if args['version']: printversion()
+
+# convert from list
+args['print'   ] = args['print'   ][0] if type(args['print'])==list    else args['print'   ]
+args['mindepth'] = args['mindepth'][0] if args['mindepth'] is not None else args['mindepth']
+args['maxdepth'] = args['maxdepth'][0] if args['maxdepth'] is not None else args['maxdepth']
+
+# ==============================================================================
+
+def find(path,ext,mindepth,maxdepth):
+
+  output = []
+
+  for dpath, dnames, fnames in os.walk(path):
+    depth = dpath.count(os.sep)
+    if mindepth is not None:
+      if depth<mindepth-1:
+        continue
+    if maxdepth is not None:
+      if depth>maxdepth-1:
+        continue
+    for i, fname in enumerate([os.path.join(dpath, fname) for fname in fnames]):
+      if fname.endswith("."+ext):
+        output += [fname]
+
+  return output
+
+# ==============================================================================
+
+files = sum([find(args['path'],i,args['mindepth'],args['maxdepth']) for i in args['extension']],[])
+
+print args['print'].join(sorted(files))
