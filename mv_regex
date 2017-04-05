@@ -1,0 +1,116 @@
+#!/usr/bin/env python3
+
+import sys,os,argparse,re,time,subprocess
+
+# ==============================================================================
+
+def printversion():
+  print('''
+Version 0.1.0
+  ''')
+  sys.exit(0)
+
+# ==============================================================================
+
+def printhelp():
+  print('''
+NAME
+
+  mv_regex - rename files using regular expressions
+
+USAGE
+
+  $ mv_regex FIND REPLACE
+
+DESCRIPTION
+
+  Rename files using regular expressions
+
+OPTIONS
+
+  -h, --help
+    Print help
+
+  --version
+    Print version
+
+  -f, --force
+    Force move, don't prompt for user interaction.
+
+RELEASE
+
+  Version 0.1.0, April 2017
+
+COPYRIGHT
+
+  T.W.J. de Geus
+  www.geus.me
+  tom@geus.me
+  ''')
+  sys.exit(0)
+
+# ==============================================================================
+
+# set options/arguments
+opts   = [\
+  ((     'find'     ),dict(nargs=1  ,type=str )),
+  ((     'replace'  ),dict(nargs=1  ,type=str )),
+  ((     'files'    ),dict(nargs='+',type=str )),
+  (('-f','--force'  ),dict(action='store_true')),
+  (('-h','--help'   ),dict(action='store_true')),
+  ((     '--version'),dict(action='store_true')),
+]
+
+# parse command-line arguments
+# - catch help
+if sys.argv[1] in ['-h','--help'   ]: printhelp()
+if sys.argv[1] in [     '--version']: printversion()
+# - create parser
+parser = argparse.ArgumentParser(add_help=False)
+for (arg,opt) in opts:
+  if type(arg)==tuple: parser.add_argument(*arg,**opt)
+  else               : parser.add_argument( arg,**opt)
+# - execute parser / convert to "<dict>"
+args = vars(parser.parse_args())
+# - print help and exit
+if args['help'   ]: printhelp()
+if args['version']: printversion()
+# - convert from list
+for key in ['find','replace']:
+  args[key] = args[key][0]
+
+# ==============================================================================
+
+def confirm(message='Proceed [y/n]?\n'):
+  while True:
+    user = input(message)
+    if not user                     : print('Please enter y or n.'); continue
+    if user not in ['y','Y','n','N']: print('Please enter y or n.'); continue
+    if user     in ['y','Y'        ]: return True
+    if user     in ['n','N'        ]: return False
+
+# ==============================================================================
+
+# check
+for file in args['files']:
+  if not os.path.isfile(file) and not os.path.isdir(file):
+    print('Input {1:s} does not exist'.format(file))
+    sys.exit(1)
+
+# reduce to matching files
+args['files'] = [file for file in args['files'] if re.match(args['find'],file)]
+
+# rename
+args['renamed'] = [re.sub(args['find'],args['replace'],file) for file in args['files']]
+
+# prompt
+if not args['force']:
+  for file,new in zip(args['files'],args['renamed']):
+    print('mv {file:s} {new:s}'.format(file=file,new=new))
+  if not confirm():
+    sys.exit(1)
+
+# rename
+for file,new in zip(args['files'],args['renamed']):
+  os.rename(file,new)
+

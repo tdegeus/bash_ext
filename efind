@@ -6,7 +6,7 @@ import argparse,os,sys
 
 def printversion():
   print r'''
-Version 1.1, February 2016
+Version 0.1.0, April 2017
   '''
   sys.exit(0)
 
@@ -42,7 +42,7 @@ EXAMPLE
 
 RELEASE
 
-  Version 1.1, February 2016
+  Version 0.1.0, April 2017
 
 COPYRIGHT
 
