@@ -1,83 +1,33 @@
 #!/usr/bin/env python3
+"""mv_regex
+  Rename files using regular expressions. The program will prompt the user for
+  confirmation before renaming (unless the "--force" options is used).
 
-import sys,os,argparse,re,time,subprocess
+Usage:
+  mv_regex [options] <search> <replace> <files>...
 
-# ==============================================================================
+Arguments:
+  <search>    Regular expression to search.
+  <replace>   Regular expression to use as replace.
+  <files>     List of files on which to do the replacement.
 
-def printversion():
-  print('''
-Version 0.1.0
-  ''')
-  sys.exit(0)
+Options:
+  -h --help   Show help.
+  --version   Show version.
+  -f --force  Force move, don't prompt for user interaction.
 
-# ==============================================================================
-
-def printhelp():
-  print('''
-NAME
-
-  mv_regex - rename files using regular expressions
-
-USAGE
-
-  $ mv_regex FIND REPLACE
-
-DESCRIPTION
-
-  Rename files using regular expressions
-
-OPTIONS
-
-  -h, --help
-    Print help
-
-  --version
-    Print version
-
-  -f, --force
-    Force move, don't prompt for user interaction.
-
-RELEASE
-
-  Version 0.1.0, April 2017
-
-COPYRIGHT
-
+Copyright:
   T.W.J. de Geus
-  www.geus.me
   tom@geus.me
-  ''')
-  sys.exit(0)
+  www.geus.me
+"""
 
-# ==============================================================================
+import sys,os,re,time,subprocess
+from docopt import docopt
 
-# set options/arguments
-opts   = [\
-  ((     'find'     ),dict(nargs=1  ,type=str )),
-  ((     'replace'  ),dict(nargs=1  ,type=str )),
-  ((     'files'    ),dict(nargs='+',type=str )),
-  (('-f','--force'  ),dict(action='store_true')),
-  (('-h','--help'   ),dict(action='store_true')),
-  ((     '--version'),dict(action='store_true')),
-]
 
-# parse command-line arguments
-# - catch help
-if sys.argv[1] in ['-h','--help'   ]: printhelp()
-if sys.argv[1] in [     '--version']: printversion()
-# - create parser
-parser = argparse.ArgumentParser(add_help=False)
-for (arg,opt) in opts:
-  if type(arg)==tuple: parser.add_argument(*arg,**opt)
-  else               : parser.add_argument( arg,**opt)
-# - execute parser / convert to "<dict>"
-args = vars(parser.parse_args())
-# - print help and exit
-if args['help'   ]: printhelp()
-if args['version']: printversion()
-# - convert from list
-for key in ['find','replace']:
-  args[key] = args[key][0]
+# parse command-line options/arguments
+args = docopt(__doc__,version='0.1.1')
 
 # ==============================================================================
 
@@ -92,25 +42,27 @@ def confirm(message='Proceed [y/n]?\n'):
 # ==============================================================================
 
 # check
-for file in args['files']:
+for file in args['<files>']:
   if not os.path.isfile(file) and not os.path.isdir(file):
     print('Input {1:s} does not exist'.format(file))
     sys.exit(1)
 
 # reduce to matching files
-args['files'] = [file for file in args['files'] if re.match(args['find'],file)]
+args['<files>'] = [file for file in args['<files>'] if re.match(args['<search>'],file)]
 
 # rename
-args['renamed'] = [re.sub(args['find'],args['replace'],file) for file in args['files']]
+args['renamed'] = [re.sub(args['<search>'],args['<replace>'],file) for file in args['<files>']]
 
 # prompt
-if not args['force']:
-  for file,new in zip(args['files'],args['renamed']):
-    print('mv {file:s} {new:s}'.format(file=file,new=new))
+if not args['--force']:
+  w = max([len(file) for file in args['<files>']])
+  fmt = 'mv {file:'+str(w)+'s} {new:s}'
+  for file,new in zip(args['<files>'],args['renamed']):
+    print(fmt.format(file=file,new=new))
   if not confirm():
     sys.exit(1)
 
 # rename
-for file,new in zip(args['files'],args['renamed']):
+for file,new in zip(args['<files>'],args['renamed']):
   os.rename(file,new)
 
