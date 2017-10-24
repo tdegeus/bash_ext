@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+"""rm_build
+  Rename common build files and folders, prompt before removal.
+
+Usage:
+  rm_build [--path=<str>]...
+
+Arguments:
+
+
+Options:
+  -h --help           Show help
+  --version           Show version
+  -p --path=<str>     Paths from which to remove [default: .]
+  -e --exclude=<str>  Exclude paths/folders
+
+Copyright:
+  T.W.J. de Geus
+  tom@geus.me
+  www.geus.me
+"""
+
+import sys,os,re,time,subprocess,shutil
+from docopt import docopt
+
+# parse command-line options/arguments
+args = docopt(__doc__,version='0.0.1')
+
+# ==================================================================================================
+
+def confirm(message='Proceed [y/n]?\n'):
+  while True:
+    user = input(message)
+    if not user                     : print('Please enter y or n.'); continue
+    if user not in ['y','Y','n','N']: print('Please enter y or n.'); continue
+    if user     in ['y','Y'        ]: return True
+    if user     in ['n','N'        ]: return False
+
+# ==================================================================================================
+
+rm = []
+
+# collect files
+for path in args['--path']:
+
+  # - get all files in the folder
+  files = os.listdir(path)
+
+  # - loop over all files, check to remove
+  for file in files:
+
+    if re.match(r'(.*)(\.egg\-info)',file): rm += [os.path.relpath(os.path.join(path,file))]
+    if re.match(r'(build)'          ,file): rm += [os.path.relpath(os.path.join(path,file))]
+    if re.match(r'(var)'            ,file): rm += [os.path.relpath(os.path.join(path,file))]
+    if re.match(r'(dist)'           ,file): rm += [os.path.relpath(os.path.join(path,file))]
+
+
+# --------------------------------------------------------------------------------------------------
+
+w      = max([len(file) for file in rm])
+folder = 'rm -r {name:'+str(w)+'s}'
+file   = 'rm    {name:'+str(w)+'s}'
+
+for name in rm:
+  if os.path.isdir(name): print(folder.format(name=name))
+  else                  : print(file  .format(name=name))
+
+if not confirm():  sys.exit(1)
+
+for name in rm:
+  shutil.rmtree(name)
