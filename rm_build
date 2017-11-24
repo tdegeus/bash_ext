@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 """rm_build
-  Rename common build files and folders, prompt before removal.
+  Remove common build files and folders. This function always prompts before removal.
 
 Usage:
   rm_build [--path=<str>]...
 
-Arguments:
-
-
 Options:
-  -h --help           Show help
-  --version           Show version
-  -p --path=<str>     Paths from which to remove [default: .]
-  -e --exclude=<str>  Exclude paths/folders
+  -h --help           Show help.
+  --version           Show version.
+  -p --path=<str>     Paths to consider [default: .].
+  -e --exclude=<str>  Exclude paths/folders.
 
 Copyright:
   T.W.J. de Geus
@@ -20,11 +17,9 @@ Copyright:
   www.geus.me
 """
 
-import sys,os,re,time,subprocess,shutil
-from docopt import docopt
+import sys, os, re, shutil, docopt
 
-# parse command-line options/arguments
-args = docopt(__doc__,version='0.0.1')
+args = docopt.docopt(__doc__,version='0.0.1')
 
 # ==================================================================================================
 
@@ -38,6 +33,7 @@ def confirm(message='Proceed [y/n]?\n'):
 
 # ==================================================================================================
 
+# list with files to remove
 rm = []
 
 # collect files
@@ -49,23 +45,38 @@ for path in args['--path']:
   # - loop over all files, check to remove
   for file in files:
 
-    if re.match(r'(.*)(\.egg\-info)',file): rm += [os.path.relpath(os.path.join(path,file))]
-    if re.match(r'(build)'          ,file): rm += [os.path.relpath(os.path.join(path,file))]
-    if re.match(r'(var)'            ,file): rm += [os.path.relpath(os.path.join(path,file))]
-    if re.match(r'(dist)'           ,file): rm += [os.path.relpath(os.path.join(path,file))]
+    if re.match(r'(.*)(\.egg\-info)'  ,file): rm += [os.path.relpath(os.path.join(path,file))]
+    if re.match(r'(build)'            ,file): rm += [os.path.relpath(os.path.join(path,file))]
+    if re.match(r'(var)'              ,file): rm += [os.path.relpath(os.path.join(path,file))]
+    if re.match(r'(dist)'             ,file): rm += [os.path.relpath(os.path.join(path,file))]
+    if re.match(r'CMakeCache.txt'     ,file): rm += [os.path.relpath(os.path.join(path,file))]
+    if re.match(r'CMakeFiles'         ,file): rm += [os.path.relpath(os.path.join(path,file))]
+    if re.match(r'Makefile'           ,file): rm += [os.path.relpath(os.path.join(path,file))]
+    if re.match(r'cmake_install.cmake',file): rm += [os.path.relpath(os.path.join(path,file))]
 
+if len(rm) == 0:
+  sys.exit(0)
 
 # --------------------------------------------------------------------------------------------------
 
-w      = max([len(file) for file in rm])
-folder = 'rm -r {name:'+str(w)+'s}'
-file   = 'rm    {name:'+str(w)+'s}'
+# set print format
+w   = max([len(file) for file in rm])
+fmt = 'rm {name:'+str(w)+'s}'
 
+# print files that will be removed
 for name in rm:
-  if os.path.isdir(name): print(folder.format(name=name))
-  else                  : print(file  .format(name=name))
+  print(fmt.format(name=name))
 
-if not confirm():  sys.exit(1)
+# ask user for confirmation
+if not confirm():
+  sys.exit(1)
 
+# if user accepted -> proceed with removal
 for name in rm:
-  shutil.rmtree(name)
+  try:
+    shutil.rmtree(name)
+  except NotADirectoryError:
+    try:
+      os.unlink(name)
+    except FileNotFoundError:
+      pass

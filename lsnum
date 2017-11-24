@@ -1,58 +1,67 @@
-#!/bin/bash
-
-# ==============================================================================
-
-function printhelp {
-echo "\
-
-NAME
-
-  lsnum - detailed file-information with numerical file-permissions
-
-USAGE
-
-  $ lsnum [STR]
-
-DESCRIPTION
-
+#!/usr/bin/env python3
+"""lsnum
   Print detailed file-information with numerical file-permissions.
 
-OPTIONS
+Usage:
+  lsnum
+  lsnum [options] <path>...
 
-  -h, --help
-    Print help.
+Options:
+  <path>      Path(s) for which to print [default: .].
+  -h --help   Show help.
+  --version   Show version.
 
-RELEASE
+Copyright:
+  T.W.J. de Geus
+  tom@geus.me
+  www.geus.me
+"""
 
-  Version 0.1.0, April 2017
-"
-}
+import sys, os, re, docopt, subprocess
 
-# ==============================================================================
+args = docopt.docopt(__doc__,version='0.0.2')
 
-if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-  printhelp; exit 0
-fi
+# ==================================================================================================
 
-# ==============================================================================
+def convert(txt):
 
-ls -lhF "$1" | while read DATA
-do
-  case "${DATA:0:1}" in
-  "-"|"d")
-    PERM=$( echo "${DATA:1:9}" | sed 's/-/0/g;s/r/4/g;s/w/2/g;s/x/1/g' )
-    P_US=$((${PERM:0:1}+${PERM:1:1}+${PERM:2:1}))
-    P_GR=$((${PERM:3:1}+${PERM:4:1}+${PERM:5:1}))
-    P_OT=$((${PERM:6:1}+${PERM:7:1}+${PERM:8:1}))
-    DATA=$( echo "$DATA" | sed "s/${DATA:0:10}/${P_US}${P_GR}${P_OT}/" )
-    echo "$DATA"
-  ;;
-  *)
-    continue
-  ;;
-  esac
-done
+  out = 0
 
-exit 0
+  for i in txt:
+    if i == 'r' : out += 4
+    if i == 'w' : out += 2
+    if i == 'x' : out += 1
 
-# ==============================================================================
+  return str(out)
+
+# ==================================================================================================
+
+# get the output of the "ls -lhF" command
+out = subprocess.check_output('ls -lhF %s'%' '.join(['"'+i+'"' for i in args['<path>']]),shell=True)
+out = out.decode('utf-8')
+
+# get a list with all possible permissions (for user/group/others)
+txt = []
+idx = []
+for a,i in zip(['r','-'],[4,0]):
+  for b,j in zip(['w','-'],[2,0]):
+    for c,k in zip(['x','-'],[1,0]):
+      txt += [    a+b+c ]
+      idx += [str(i+j+k)]
+
+# get a list for all possible permissions for user+group+others
+perm = []
+iper = []
+for a,i in zip(txt,idx):
+  for b,j in zip(txt,idx):
+    for c,k in zip(txt,idx):
+      perm += [a+b+c]
+      iper += [i+j+k]
+
+# replace the permission in the output of "ls"
+for a,i in zip(perm,iper):
+  out = out.replace(a,'('+i+')')
+
+# print the output
+print(out)
+
