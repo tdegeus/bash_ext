@@ -38,7 +38,7 @@ def convert(txt):
 
 # get the output of the "ls -lhF" command
 out = subprocess.check_output('ls -lhF %s'%' '.join(['"'+i+'"' for i in args['<path>']]),shell=True)
-out = out.decode('utf-8')
+out = out.decode('utf-8').strip()
 
 # get a list with all possible permissions (for user/group/others)
 txt = []

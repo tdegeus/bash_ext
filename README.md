@@ -2,16 +2,23 @@
 
 Wrappers around BASH functions.
 
-## Contents
+# Contents
 
 <!-- MarkdownTOC -->
 
-- [`lsnum`](#lsnum)
-- [`lslist`](#lslist)
-- [`extract`](#extract)
-- [`efind`](#efind)
+- [Functions](#functions)
+    - [`lsnum`](#lsnum)
+    - [`lslist`](#lslist)
+    - [`extract`](#extract)
+    - [`efind`](#efind)
+    - [`mv_regex`](#mvregex)
+    - [`rm_build`](#rmbuild)
+    - [`pstat`](#pstat)
+- [Installation](#installation)
 
 <!-- /MarkdownTOC -->
+
+# Functions
 
 ## `lsnum`
 
@@ -42,3 +49,55 @@ Automatically extract a (compressed) archive.
 ## `efind`
 
 Find files with specific extensions.
+
+## `mv_regex`
+
+The move command, but allow regular expression. This allows one to partly rename a batch of files.
+
+## `rm_build`
+
+Remove some common temporary build files. The user is prompted before actual removal.
+
+## `pstat`
+
+Parse the output of `ps` is a human readable manner.
+
+# Installation
+
+To get these scripts to work one can:
+
+-   Point the `$PATH` to the `bin/` folder of this directory, for example by adding the following line to the `~/.bashrc` (or `~/.zshrc`):
+  
+    ```bash
+    export PATH=/path/to/bash_ext/bin:$PATH
+    ```
+
+-   'Install' the script:
+  
+    1.  'Install' the scripts:
+  
+        ```bash
+        cd /path/to/bash_ext
+        mkdir build
+        cd build
+        cmake .. 
+        make install
+        ```
+     
+-   'Install' the script in your home folder:
+  
+    1.  Create a directory to store libraries in the home-folder. For example:
+  
+        ```bash
+        mkdir ~/opt
+        ```
+
+    2.  'Install' the bash_ext's scripts. For example:
+  
+        ```bash
+        cd /path/to/bash_ext
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX:PATH=$HOME/opt
+        make install
+        ```
