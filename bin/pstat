@@ -4,12 +4,13 @@
 
 Usage:
   pstat [options]
-  pstat [options] [--user=N...] [--pid=N...] [--sort=N...]
+  pstat [options] [--user=N...] [--pid=N...] [--command=N...] [--sort=N...]
 
 Options:
   -U                     Limit jobs to the current user.
   -u, --user=<NAME>      Limit jobs to a certain user (may be a regex).
   -p, --pid=<NAME>       Limit jobs to a certain process-id (may be a regex).
+  -c, --command=<NAME>   Limit jobs to a certain command (may be a regex).
   -s, --sort=<NAME>      Sort by field (selected by the header-name).
   -r, --reverse          Reverse sort [default: False].
       --output=<NAME>    Select output columns.
@@ -189,8 +190,9 @@ args = docopt.docopt(__doc__,version='0.0.1')
 if args['-U']: args['--user'] += [ pwd.getpwuid( os.getuid() )[ 0 ] ]
 
 # rename fields
-args['USER'] = args.pop('--user')
-args['PID' ] = args.pop('--pid' )
+args['USER'   ] = args.pop('--user'   )
+args['PID'    ] = args.pop('--pid'    )
+args['COMMAND'] = args.pop('--command')
 
 # squeue headers -> custom headers
 alias = {
@@ -240,7 +242,7 @@ for job in data:
   jobs += [info]
 
 # limit based on command-line options
-for key in ['USER','PID']:
+for key in ['USER','PID','COMMAND']:
   if args[key]:
     jobs = [job for job in jobs if sum([1 if re.match(name,job[key]) else 0 for name in args[key]])]
 
