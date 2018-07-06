@@ -6,13 +6,15 @@ project(bash_ext)
 
 # list with binaries
 set(PROJECT_BINARIES
-  bin/efind
-  bin/extract
-  bin/lslist
-  bin/lsnum
-  bin/mv_regex
-  bin/pstat
-  bin/rm_build
+  efind
+  extract
+  lslist
+  lsnum
+  mv_regex
+  cp_regex
+  rm_regex
+  pstat
+  rm_build
 )
 
 # install binaries
@@ -23,8 +25,10 @@ message(STATUS "")
 message(STATUS "+-------------------------------------------------------------------------------")
 message(STATUS "|")
 message(STATUS "| Use 'make install' to install in '${CMAKE_INSTALL_PREFIX}'")
+message(STATUS "|")
 message(STATUS "| To specify a custom directory call")
 message(STATUS "|   cmake .. -DCMAKE_INSTALL_PREFIX=yourprefix")
+message(STATUS "|")
 message(STATUS "| For custom paths, add the following line to your '~/.bashrc'")
 message(STATUS "|   export PATH=${CMAKE_INSTALL_PREFIX}/bin:$PATH")
 message(STATUS "|")

@@ -11,8 +11,10 @@ Wrappers around BASH functions.
     - [`lslist`](#lslist)
     - [`extract`](#extract)
     - [`efind`](#efind)
-    - [`mv_regex`](#mvregex)
-    - [`rm_build`](#rmbuild)
+    - [`mv_regex`](#mv_regex)
+    - [`rm_regex`](#rm_regex)
+    - [`cp_regex`](#cp_regex)
+    - [`rm_build`](#rm_build)
     - [`pstat`](#pstat)
 - [Installation](#installation)
 
@@ -54,6 +56,14 @@ Find files with specific extensions.
 
 The move command, but allow regular expression. This allows one to partly rename a batch of files.
 
+## `rm_regex`
+
+The remove command, but allow regular expression. This allows one to selectivity remove a batch of files.
+
+## `cp_regex`
+
+The copy command, but allow regular expression. This allows one to selectivity copy a batch of files.
+
 ## `rm_build`
 
 Remove some common temporary build files. The user is prompted before actual removal.
@@ -66,10 +76,10 @@ Parse the output of `ps` is a human readable manner.
 
 To get these scripts to work one can:
 
--   Point the `$PATH` to the `bin/` folder of this directory, for example by adding the following line to the `~/.bashrc` (or `~/.zshrc`):
+-   Point the `$PATH` to this repository's location, for example by adding the following line to the `~/.bashrc` (or `~/.zshrc`):
   
     ```bash
-    export PATH=/path/to/bash_ext/bin:$PATH
+    export PATH=/path/to/bash_ext:$PATH
     ```
 
 -   'Install' the script:

@@ -3,13 +3,15 @@
   Remove common build files and folders. This function always prompts before removal.
 
 Usage:
-  rm_build [--path=<str>]...
+  rm_build [options] [--path=<str>]...
 
 Options:
-  -h --help           Show help.
-  --version           Show version.
-  -p --path=<str>     Paths to consider [default: .].
-  -e --exclude=<str>  Exclude paths/folders.
+  -p, --path=<str>      Paths to consider [default: .].
+  -e, --exclude=<str>   Exclude paths/folders.
+  -f, --force           Remove without prompting for confirmation.
+  -h, --help            Show help.
+      --version         Show version.
+
 
 Copyright:
   T.W.J. de Geus
@@ -68,8 +70,9 @@ for name in rm:
   print(fmt.format(name=name))
 
 # ask user for confirmation
-if not confirm():
-  sys.exit(1)
+if not args['--force']:
+  if not confirm():
+    sys.exit(1)
 
 # if user accepted -> proceed with removal
 for name in rm:
