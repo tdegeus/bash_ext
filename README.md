@@ -11,6 +11,7 @@ Wrappers around BASH functions.
     - [`lslist`](#lslist)
     - [`extract`](#extract)
     - [`efind`](#efind)
+    - [`ls_regex`](#ls_regex)
     - [`mv_regex`](#mv_regex)
     - [`rm_regex`](#rm_regex)
     - [`cp_regex`](#cp_regex)
@@ -52,17 +53,21 @@ Automatically extract a (compressed) archive.
 
 Find files with specific extensions.
 
+## `ls_regex`
+
+The ls command, but allowing regular expression.
+
 ## `mv_regex`
 
-The move command, but allow regular expression. This allows one to partly rename a batch of files.
+The move command, but allowing regular expression. This allows one to partly rename a batch of files.
 
 ## `rm_regex`
 
-The remove command, but allow regular expression. This allows one to selectivity remove a batch of files.
+The remove command, but allowing regular expression. This allows one to selectivity remove a batch of files.
 
 ## `cp_regex`
 
-The copy command, but allow regular expression. This allows one to selectivity copy a batch of files.
+The copy command, but allowing regular expression. This allows one to selectivity copy a batch of files.
 
 ## `rm_build`
 

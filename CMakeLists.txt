@@ -10,6 +10,7 @@ set(PROJECT_BINARIES
   extract
   lslist
   lsnum
+  ls_regex
   mv_regex
   cp_regex
   rm_regex
