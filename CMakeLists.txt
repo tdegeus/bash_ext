@@ -8,6 +8,7 @@ project(bash_ext)
 set(PROJECT_BINARIES
   efind
   extract
+  hwd
   lslist
   lsnum
   ls_regex

@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+'''hwd
+  Print "${HOST}:${PWD}" and copy it to the clipboard.
+
+Usage:
+  hwd
+
+  -h, --help      Show help.
+      --version   Show version.
+
+(c - MIT) T.W.J. de Geus | tom@geus.me | www.geus.me
+'''
+
+# ==================================================================================================
+
+import os, docopt, socket
+
+# parse command-line options
+args = docopt.docopt(__doc__,version='0.0.1')
+
+# set output
+out = socket.gethostname() + ':' + os.environ['PWD']
+
+# print output
+print(out)
+
+
