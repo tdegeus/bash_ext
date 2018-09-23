@@ -19,7 +19,7 @@ import os, docopt, socket
 args = docopt.docopt(__doc__,version='0.0.1')
 
 # set output
-out = socket.gethostname() + ':' + os.environ['PWD']
+out = socket.gethostname() + ":'" + os.environ['PWD'] + "'"
 
 # print output
 print(out)
