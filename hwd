@@ -5,6 +5,7 @@
 Usage:
   hwd
 
+  -q, --quote     Put single quotation marks around the path.
   -h, --help      Show help.
       --version   Show version.
 
@@ -19,9 +20,8 @@ import os, docopt, socket
 args = docopt.docopt(__doc__,version='0.0.1')
 
 # set output
-out = socket.gethostname() + ":'" + os.environ['PWD'] + "'"
+if args['--quote']: print(socket.gethostname() + ":'" + os.environ['PWD'] + "'")
+else              : print(socket.gethostname() + ":"  + os.environ['PWD']      )
 
-# print output
-print(out)
 
 
