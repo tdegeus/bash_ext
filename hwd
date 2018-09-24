@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 '''hwd
-  Print "${HOST}:${PWD}" and copy it to the clipboard.
+  Print "${PWD}" or "${HOST}:${PWD}" and copy it to the clipboard.
 
 Usage:
-  hwd
+  hwd [options]
 
+Options:
+  -h, --host      Include host.
   -q, --quote     Put single quotation marks around the path.
-  -h, --help      Show help.
+  -c, --copy      Print and copy path.
+      --help      Show help.
       --version   Show version.
 
 (c - MIT) T.W.J. de Geus | tom@geus.me | www.geus.me
@@ -19,9 +22,22 @@ import os, docopt, socket
 # parse command-line options
 args = docopt.docopt(__doc__,version='0.0.1')
 
-# set output
-if args['--quote']: print(socket.gethostname() + ":'" + os.environ['PWD'] + "'")
-else              : print(socket.gethostname() + ":"  + os.environ['PWD']      )
+# initialize output
+out = ''
 
+# add host-name
+if args['--host']: out += socket.gethostname() + ":"
 
+# add path
+if args['--quote']: out += "'" + os.environ['PWD'] + "'"
+else              : out +=       os.environ['PWD']
 
+# print output
+print(out)
+
+# copy
+if args['--copy']:
+
+  import pyperclip
+
+  pyperclip.copy(out)
